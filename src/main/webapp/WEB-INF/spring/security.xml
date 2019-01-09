@@ -1,0 +1,89 @@
+<b:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:b="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		  http://www.springframework.org/schema/beans/spring-beans.xsd  
+		http://www.springframework.org/schema/security
+		 http://www.springframework.org/schema/security/spring-security.xsd">
+
+	<b:bean id="securityContextRepository"
+		class='org.springframework.security.web.context.NullSecurityContextRepository' />
+	<b:bean id="securityContextPersistenceFilter"
+		class="org.springframework.security.web.context.SecurityContextPersistenceFilter">
+		<b:constructor-arg ref="securityContextRepository" />
+	</b:bean>
+
+	<b:bean id="filterChainProxy"
+		class="org.springframework.security.web.FilterChainProxy">
+		<filter-chain-map request-matcher="ant">
+			<filter-chain pattern="/**"
+				filters="securityContextPersistenceFilter" />
+		</filter-chain-map>
+	</b:bean>
+
+	<b:import resource="classpath:Hibernate.xml" />
+
+	<b:bean id="firewall"
+		class="org.springframework.security.web.firewall.DefaultHttpFirewall">
+		<b:property name="allowUrlEncodedSlash" value="true" />
+	</b:bean>
+	<b:bean id="encoder"
+		class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder">
+	</b:bean>
+	<!-- sessionfactory -->
+	<b:bean id="sessionFactory"
+		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<b:property name="dataSource" ref="dataSource" />
+		<b:property name="packagesToScan" value="Com.hibook.entity" />
+		<b:property name="hibernateProperties">
+			<b:props>
+				<b:prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</b:prop>
+				<b:prop key="hibernate.show_sql">true</b:prop>
+			</b:props>
+		</b:property>
+
+	</b:bean>
+	<!-- userDao -->
+	<b:bean id="userDao" class="Com.hibook.dao.UserDaoSercurity">
+		<b:property name="sessionFactory" ref="sessionFactory" />
+
+	</b:bean>
+
+
+	<!-- userService -->
+	<b:bean id="myUserDetailsService"
+		class="Com.hibook.security.MyUserDetailsService">
+		<b:property name="userDao" ref="userDao" />
+	</b:bean>
+	
+	<http-firewall ref="firewall" />
+
+	<http security="none" pattern="/resources/**" />
+	<http auto-config="true">
+		<intercept-url pattern="/" access="permitAll" />
+		<intercept-url pattern="/search" access="permitAll" />
+		<intercept-url pattern="/loginsuccess"
+			access="permitAll" />
+		<intercept-url pattern="/admin**"
+			access="hasRole('ADMIN')" />
+		<intercept-url pattern="/adminmain"
+			access="hasRole('ADMIN')" />
+		<intercept-url pattern="/dba**"
+			access="hasRole('ADMIN') and hasRole('DBA')" />
+		<form-login login-page="/login"
+			login-processing-url="/j_spring_security_login"
+			default-target-url="/loginsuccess"
+			authentication-failure-url="/login?error"
+			username-parameter="username" password-parameter="password" />
+		<csrf disabled="true" />
+		<!-- userService -->
+	</http>
+	<authentication-manager>
+		<authentication-provider
+			user-service-ref="myUserDetailsService">
+			<password-encoder ref="encoder" />
+		</authentication-provider>
+	</authentication-manager>
+
+</b:beans>

@@ -1,0 +1,12 @@
+eclipse.preferences.version=1
+encoding//src/main/java/Com/hibook/controller/ADetailController.java=UTF-8
+encoding//src/main/java/Com/hibook/controller/BillAPIController.java=UTF-8
+encoding//src/main/java/Com/hibook/controller/CartController.java=UTF-8
+encoding//src/main/java/Com/hibook/controller/HomeController.java=UTF-8
+encoding//src/main/java/Com/hibook/controller/PaymentAPICon.java=UTF-8
+encoding//src/main/java/Com/hibook/dao/PaymentDAO.java=UTF-8
+encoding//src/main/java/Com/hibook/entity/Book.java=UTF-8
+encoding//src/main/java/Com/hibook/entity/Payment.java=UTF-8
+encoding//src/main/java/Com/hibook/service/PaymentSer.java=UTF-8
+encoding//src/main/webapp/WEB-INF/view/info_user.jsp=UTF-8
+encoding//src/main/webapp/resources/css/mycssHome.css=UTF-8
